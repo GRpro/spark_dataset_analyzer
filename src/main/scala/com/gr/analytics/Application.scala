@@ -1,5 +1,7 @@
 package com.gr.analytics
 
+import java.io.PrintWriter
+
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.StringType
 import org.apache.spark.sql.{DataFrame, SparkSession}
@@ -65,7 +67,12 @@ object Application {
 
     val statisticsJson = statistics.toJson.prettyPrint
 
-    sparkSession.sparkContext.parallelize(Seq(statisticsJson), 1).toDF().write.format("com.databricks.spark.csv").save(config.destPath)
+    new PrintWriter(config.destPath) {
+      write(statisticsJson)
+      close()
+    }
+
+//    sparkSession.sparkContext.parallelize(Seq(statisticsJson), 1).toDF().write.format("com.databricks.spark.csv").save(config.destPath)
 
   }
 }
